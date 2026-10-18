@@ -3,6 +3,12 @@ import Event from "../models/Event.js";
 
 const router = express.Router();
 
+router.get("/", async (req, res) => {
+  return res.status(409).json({
+    success: false,
+    message: "An event with this ID already exists.",
+  });
+});
 // POST /api/events
 router.post("/", async (req, res) => {
   try {
