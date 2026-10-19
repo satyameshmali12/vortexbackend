@@ -15,22 +15,25 @@ app.use(
 
 app.use(express.json());
 
-app.use("/api/events", eventRoutes);
-app.use("/api/registrations", registrationRoutes);
-
-app.get("/", (req, res) => {
-  res.json({ message: "Vortex Registration API is running" });
-});
-
-// Cache the connection promise so warm invocations can reuse it.
+// Connect to MongoDB before handling API requests
 app.use(async (req, res, next) => {
   try {
     await connectDB();
     next();
   } catch (error) {
-    console.error("Failed to connect to MongoDB:", error);
-    res.status(500).json({ message: "Database connection failed" });
+    console.error("MongoDB connection failed:", error.message);
+    res.status(500).json({
+      success: false,
+      message: "Database connection failed",
+    });
   }
+});
+
+app.use("/api/events", eventRoutes);
+app.use("/api/registrations", registrationRoutes);
+
+app.get("/", (req, res) => {
+  res.json({ message: "Vortex Registration API is running" });
 });
 
 export default app;
